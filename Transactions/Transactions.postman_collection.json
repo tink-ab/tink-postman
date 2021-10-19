@@ -1,0 +1,171 @@
+{
+	"info": {
+		"_postman_id": "459b71ee-e6de-4e65-b397-d9f0d8dc3339",
+		"name": "Transactions One-time access",
+		"description": "Welcome to Tink's Transactions One-time access collection.\n\nFirst, please fill out the variables at the collection-level.\n\nIf you have not created an app already, please do so now. After creating an app, you will receive the `client_id` and `client_secret` values.\n\nThen, please build a Tink Link URL (in Console, browse to Transactions > Tink Link).\n\nGo through the Tink Link flow. Here, the user is guided through the steps necessary for connecting to the bank, so that Tink can connect and retrieve account and transactional data.\n\nAt the end of a successful authorization flow, you will receive a `code`. Add that value as a variable in the collection as well.\n\nThen, run the requests in order. First, Tink will use your `client_id`, `client_secret` along with the `code` to obtain an `access_token`.\n\nThen, the `access_token` can repeatedly be used for requests that retrieve the aggregated data from the Tink platform.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Exchange code for an access token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonResponse = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"access_token\", jsonResponse.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "{{client_id}}"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{client_secret}}"
+						},
+						{
+							"key": "grant_type",
+							"value": "authorization_code"
+						},
+						{
+							"key": "code",
+							"value": "{{code}}"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://api.tink.com/api/v1/oauth/token",
+					"protocol": "https",
+					"host": [
+						"api",
+						"tink",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"oauth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Get accounts list",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.tink.com/data/v2/accounts",
+					"protocol": "https",
+					"host": [
+						"api",
+						"tink",
+						"com"
+					],
+					"path": [
+						"data",
+						"v2",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Get transactions",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.tink.com/data/v2/transactions",
+					"protocol": "https",
+					"host": [
+						"api",
+						"tink",
+						"com"
+					],
+					"path": [
+						"data",
+						"v2",
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": ""
+		},
+		{
+			"key": "client_id",
+			"value": ""
+		},
+		{
+			"key": "client_secret",
+			"value": ""
+		},
+		{
+			"key": "code",
+			"value": ""
+		}
+	]
+}
