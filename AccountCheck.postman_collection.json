@@ -95,7 +95,7 @@
 					"query": [
 						{
 							"key": "Authorization",
-							"value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6ImZkOThhZjI2LTQyZTUtNDY5OC1iOTVmLWE0MTRmZjFmMzhlNiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDE4OTM2MjIsImlhdCI6MTY0MTg5MTgyMiwiaXNzIjoidGluazovL2F1dGgiLCJqdGkiOiIyOWZkNmE1Yy01MjdlLTRjNmUtODY5Ny1hNzJlMDBkZTU4ODkiLCJzY29wZXMiOlsiYWNjb3VudC12ZXJpZmljYXRpb24tcmVwb3J0czpyZWFkIl0sInN1YiI6InRpbms6Ly9hdXRoL2NsaWVudC8zYmJkMzhjNzNiNDE0MzI2YTdjMWNmYTM2MTM1YjM2YyIsInRpbms6Ly9hcHAvaWQiOiJiNzZlM2E5NGQ2NDA0ZDc3YTc5ZTc2MjYzMzQzYmMxYyIsInRpbms6Ly9hcHAvdmVyaWZpZWQiOiJmYWxzZSJ9.HWm7Vm3gdIbnn6jE_vGKqq47E-Et3iXBCskDC_yY9Ef7qn4yF_9rSGXTRSi2Zo3vf9gXy7BtjBeF21aEF7e6sA",
+							"value": "Bearer {{access_token}}",
 							"disabled": true
 						}
 					]
