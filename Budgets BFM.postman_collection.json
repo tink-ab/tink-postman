@@ -1,0 +1,388 @@
+{
+	"info": {
+		"_postman_id": "74972777-2ed8-4787-957e-65cf16b51541",
+		"name": "Budgets BFM",
+		"description": "Welcome to Tink’s Postman collection for Financial calendar.\n\nFor detailed information on how to use Financial Calendar, visit [API docs page for this service](https://docs.tink.com/api#finance-management/cash-flow).\n\nThe documentation in this Postman collection shows how you get your Tink variables and enter them in Postman to be able to use this collection.\n\nPrerequisites:\n\n*   Generated User\n*   Accounts created and linked to a user\n*   (Optional) Some transactions ingested for accounts\n    \n\nIn Postman, go to the **Variables** tab, which should be the one with a green dot next to it.\n\nMake sure that you enter all of your variables in the **CURRENT VALUE** column.\n\nEnter the `bearer_token` value that you have generated. It's an authentication token generated for user not for app.\n\nThere is no need to change `ApiUrl` unless you want to use non-production environments.\n\n`businessBudgetId` would be filled automatically when this object is created from this collection, If needed it can be replaced with pre-existing id.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create one-off budget",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"create one-off business budget should return HTTP 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"    // This is example how you can set collection variables after the response is received from the request",
+							"    body = JSON.parse(pm.response.text())",
+							"    pm.collectionVariables.set(\"businessBudgetId\", body.id);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"targetAmount\": {\n        \"value\": {\n            \"unscaled_value\": 123,\n            \"scale\": 0\n        },\n        \"currency_code\": \"SEK\"\n    },\n    \"title\": \"Test budget\",\n    \"description\": \"Test budget's description\",\n    \"recurrence\": {\n        \"frequency\": \"ONE_OFF\",\n        \"start\": \"2021-07-01\",\n        \"end\": \"2021-07-31\"\n    },\n    \"allocationRules\": {\n        \"expenseAllocationRules\": [],\n        \"incomeAllocationRules\": [\n            {\n                \"categories\": [\n                    {\n                        \"id\": \"category-id-placeholder\"\n                    }\n                ],\n                \"accounts\": [\n                    {\n                        \"id\": \"account-id-placeholder\"\n                    }\n                ],\n                \"tags\": []\n            }\n        ]\n    },\n    \"type\": \"INCOME\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/business-budgets",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"business-budgets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create recurring budget",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"create recurring business budget should return HTTP 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"    // This is example how you can set collection variables after the response is received from the request",
+							"    body = JSON.parse(pm.response.text())",
+							"    pm.collectionVariables.set(\"businessBudgetId\", body.id);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"targetAmount\": {\n        \"value\": {\n            \"unscaled_value\": 123,\n            \"scale\": 0\n        },\n        \"currency_code\": \"SEK\"\n    },\n    \"title\": \"Test budget\",\n    \"description\": \"Test budget's description\",\n    \"recurrence\": {\n        \"frequency\": \"MONTHLY\",\n        \"start\": \"2021-07-01\",\n        \"end\": \"2021-12-31\"\n    },\n    \"allocationRules\": {\n        \"expenseAllocationRules\": [],\n        \"incomeAllocationRules\": [\n            {\n                \"categories\": [\n                    {\n                        \"id\": \"category-id-placeholder\"\n                    }\n                ],\n                \"accounts\": [\n                    {\n                        \"id\": \"account-id-placeholder\"\n                    }\n                ],\n                \"tags\": []\n            }\n        ]\n    },\n    \"type\": \"INCOME\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/business-budgets",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"business-budgets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get budget history",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/business-budgets/:budgetId/history",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"business-budgets",
+						":budgetId",
+						"history"
+					],
+					"variable": [
+						{
+							"key": "budgetId",
+							"value": "{{businessBudgetId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get budget details",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/business-budgets/:budgetId",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"business-budgets",
+						":budgetId"
+					],
+					"variable": [
+						{
+							"key": "budgetId",
+							"value": "{{businessBudgetId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update budget",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"targetAmount\": {\n        \"value\": {\n            \"unscaled_value\": 1000000,\n            \"scale\": 0\n        },\n        \"currency_code\": \"SEK\"\n    },\n    \"title\": \"Test budget new title\",\n    \"description\": \"Test budget's new description\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/business-budgets/:budgetId",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"business-budgets",
+						":budgetId"
+					],
+					"variable": [
+						{
+							"key": "budgetId",
+							"value": "{{businessBudgetId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete budget",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/business-budgets/:budgetId",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"business-budgets",
+						":budgetId"
+					],
+					"variable": [
+						{
+							"key": "budgetId",
+							"value": "{{businessBudgetId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Business Budgets",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/business-budgets?progress_status_in=ON_TRACK",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"business-budgets"
+					],
+					"query": [
+						{
+							"key": "progress_status_in",
+							"value": "ON_TRACK"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Business Budget History",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/business-budgets",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"business-budgets"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearer_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"Status code is 200\", function () {",
+					"  pm.response.to.have.status(200);",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "bearer_token",
+			"value": ""
+		},
+		{
+			"key": "ApiUrl",
+			"value": "https://api.tink.com",
+			"type": "string"
+		},
+		{
+			"key": "businessBudgetId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

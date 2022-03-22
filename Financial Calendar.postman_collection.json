@@ -1,0 +1,734 @@
+{
+	"info": {
+		"_postman_id": "163add5e-928b-4299-94aa-dc0cfd3bed9f",
+		"name": "Financial Calendar",
+		"description": "Welcome to Tink’s Postman collection for Financial calendar.\n\nFor detailed information on how to use Financial Calendar, visit [API docs page for this service](https://docs.tink.com/api#finance-management/cash-flow).\n\nThe documentation in this Postman collection shows how you get your Tink variables and enter them in Postman to be able to use this collection.\n\nPrerequisites:\n\n*   Generated User\n*   Accounts created and linked to a user\n*   (Optional) Some transactions ingested for accounts\n    \n\nIn Postman, go to the **Variables** tab, which should be the one with a green dot next to it.\n\nMake sure that you enter all of your variables in the **CURRENT VALUE** column.\n\nEnter the `bearer_token` value that you have generated. It's an authentication token generated for user not for app.\n\nThere is no need to change `ApiUrl` unless you want to use non-production environments.\n\n`calendarEventId` and `calendarEventAttachmentId` would be filled automatically when those objects are created from this collection, If needed they can be replaced with pre-existing ids.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create calendar event",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"create event should return HTTP 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"    // This is example how you can set collection variables after the response is received from the request",
+							"    body = JSON.parse(pm.response.text())",
+							"    pm.collectionVariables.set(\"calendarEventId\", body.id);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"description\": \"test\",\n    \"title\": \"test2\",\n    \"dueDate\": \"2020-07-14\",\n    \"eventAmount\": {\n            \"currencyCode\": \"EUR\",\n            \"value\": {\n                \"scale\": 2,\n                \"unscaledValue\": 1050\n            }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/financial-calendar-events",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"financial-calendar-events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get calendar event",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"get event should return HTTP 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/financial-calendar-events/:calendarEventId",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"financial-calendar-events",
+						":calendarEventId"
+					],
+					"variable": [
+						{
+							"key": "calendarEventId",
+							"value": "{{calendarEventId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update event",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"update event should return HTTP 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"description\": \"polowanie na myszojelenia\",\n    \"title\": \"test2\",\n    \"eventAmount\": {\n            \"currencyCode\": \"EUR\",\n            \"value\": {\n                \"scale\": 2,\n                \"unscaledValue\": 1050\n            }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/financial-calendar-events/:calendarEventId",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"financial-calendar-events",
+						":calendarEventId"
+					],
+					"variable": [
+						{
+							"key": "calendarEventId",
+							"value": "{{calendarEventId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add attachment to event",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"add attachment to event should return HTTP 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    body = JSON.parse(pm.response.text())",
+							"    pm.collectionVariables.set(\"calendarEventAttachmentId\", body.id);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\": \"attachment url\",\n    \"title\": \"attachment title\"\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/financial-calendar-events/:calendarEventId/attachments",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"financial-calendar-events",
+						":calendarEventId",
+						"attachments"
+					],
+					"variable": [
+						{
+							"key": "calendarEventId",
+							"value": "{{calendarEventId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List calendar events",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"list events should return HTTP 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/financial-calendar-events?due_date_gte=2020-01-01&due_date_lte=2022-01-01",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"financial-calendar-events"
+					],
+					"query": [
+						{
+							"key": "due_date_gte",
+							"value": "2020-01-01"
+						},
+						{
+							"key": "due_date_lte",
+							"value": "2022-01-01"
+						},
+						{
+							"key": "accountIdIn",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "accountIdIn",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "accountIdIn",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List calendar event summaries",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"list event summaries should return HTTP 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/financial-calendar-summaries/WEEKLY?period_gte=2020-01-01&period_lte=2021-11-01",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"financial-calendar-summaries",
+						"WEEKLY"
+					],
+					"query": [
+						{
+							"key": "period_gte",
+							"value": "2020-01-01"
+						},
+						{
+							"key": "period_lte",
+							"value": "2021-11-01"
+						},
+						{
+							"key": "accountIdIn",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "accountIdIn",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "accountIdIn",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create calendar event reconciliations",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"create reconciliation should return HTTP 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"transaction_id\": \"9b2c283a73ba49679798cb2105571661\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/financial-calendar-events/:calendarEventId/reconciliations",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"financial-calendar-events",
+						":calendarEventId",
+						"reconciliations"
+					],
+					"variable": [
+						{
+							"key": "calendarEventId",
+							"value": "{{calendarEventId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Reconciliation Details",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/financial-calendar-events/:calendarEventId/reconciliations/details",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"financial-calendar-events",
+						":calendarEventId",
+						"reconciliations",
+						"details"
+					],
+					"variable": [
+						{
+							"key": "calendarEventId",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Recurring Group",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n    \"rrulePattern\": \"FREQ=DAILY;INTERVAL=10;COUNT=5\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/financial-calendar-events/:event_id/recurring-group",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"financial-calendar-events",
+						":event_id",
+						"recurring-group"
+					],
+					"variable": [
+						{
+							"key": "event_id",
+							"value": "{{calendarEventId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get reconciliation suggestion",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/financial-calendar-events/:event_id/reconciliations/suggestions",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"financial-calendar-events",
+						":event_id",
+						"reconciliations",
+						"suggestions"
+					],
+					"variable": [
+						{
+							"key": "event_id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Reconciliation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"delete reconciliation should return HTTP 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/financial-calendar-events/:calendarEventId/reconciliations/:transactionId",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"financial-calendar-events",
+						":calendarEventId",
+						"reconciliations",
+						":transactionId"
+					],
+					"variable": [
+						{
+							"key": "calendarEventId",
+							"value": ""
+						},
+						{
+							"key": "transactionId",
+							"value": "33333"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete attachment",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"delete calendar event attachment should return HTTP 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\": \"attachment url\",\n    \"title\": \"attachment title\"\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/financial-calendar-events/:event_id/attachments/:attachment_id/",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"financial-calendar-events",
+						":event_id",
+						"attachments",
+						":attachment_id",
+						""
+					],
+					"variable": [
+						{
+							"key": "event_id",
+							"value": "{{calendarEventId}}"
+						},
+						{
+							"key": "attachment_id",
+							"value": "{{calendarEventAttachmentId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete event",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"delete calendar event should return HTTP 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/financial-calendar-events/:event_id/?recurring=SINGLE",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"financial-calendar-events",
+						":event_id",
+						""
+					],
+					"query": [
+						{
+							"key": "recurring",
+							"value": "SINGLE"
+						}
+					],
+					"variable": [
+						{
+							"key": "event_id",
+							"value": "{{calendarEventId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearer_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"Status code is 200\", function () {",
+					"  pm.response.to.have.status(200);",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "bearer_token",
+			"value": ""
+		},
+		{
+			"key": "calendarEventId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ApiUrl",
+			"value": "https://api.tink.com",
+			"type": "string"
+		},
+		{
+			"key": "calendarEventAttachmentId",
+			"value": ""
+		}
+	]
+}
