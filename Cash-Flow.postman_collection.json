@@ -1,0 +1,103 @@
+{
+	"info": {
+		"_postman_id": "a9712220-e206-401e-b8e9-ef6065904cff",
+		"name": "Cash-Flow",
+		"description": "Welcome to Tink’s Postman collection for Cash-Flow.\n\nFor detailed information on how to use Cash-Flow, visit [API docs page for this service](https://docs.tink.com/api#finance-management/cash-flow).\n\nThe documentation in this Postman collection shows how you get your Tink variables and enter them in Postman to be able to use this collection.\n\nPrerequisites:\n\n*   Generated User\n*   Accounts created and linked to a user\n*   (Optional) Some transactions ingested for accounts\n    \n\nIn Postman, go to the **Variables** tab, which should be the one with a green dot next to it.\n\nMake sure that you enter all of your variables in the **CURRENT VALUE** column.\n\nEnter the `bearer_token` value that you have generated. It's an authentication token generated for user not for app.\n\nThere is no need to change `ApiUrl` unless you want to use non-production environments.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get cash flow summaries",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"get cash flow summaries should return HTTP 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ApiUrl}}/finance-management/v1/cash-flow-summaries/:resolution?from_gte=2021-01-01&to_lte=2022-01-01",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"finance-management",
+						"v1",
+						"cash-flow-summaries",
+						":resolution"
+					],
+					"query": [
+						{
+							"key": "from_gte",
+							"value": "2021-01-01"
+						},
+						{
+							"key": "to_lte",
+							"value": "2022-01-01"
+						}
+					],
+					"variable": [
+						{
+							"key": "resolution",
+							"value": "WEEKLY",
+							"description": "one of: DAILY, WEEKLY, MONTHLY, YEARLY"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearer_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"Status code is 200\", function () {",
+					"  pm.response.to.have.status(200);",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "bearer_token",
+			"value": ""
+		},
+		{
+			"key": "ApiUrl",
+			"value": "https://api.tink.com",
+			"type": "string"
+		}
+	]
+}
