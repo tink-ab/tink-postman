@@ -1,0 +1,242 @@
+{
+	"info": {
+		"_postman_id": "1d0afa5f-8dda-4341-bf94-d4d890a87f68",
+		"name": "Connector API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Get Access Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"access_token\", jsonData.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "{{client_id}}",
+							"type": "default"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{client_secret}}",
+							"type": "default"
+						},
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "default"
+						},
+						{
+							"key": "scope",
+							"value": "user:create,user:read,transactions:write,transactions:read,accounts:write,accounts:read",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://api.tink.com/api/v1/oauth/token",
+					"protocol": "https",
+					"host": [
+						"api",
+						"tink",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"oauth",
+						"token"
+					]
+				},
+				"description": "Welcome to Tink’s Postman collection for Income Check.\n\nFor detailed information on how to use Income Check, visit [Fetch your first Income Check report](https://docs.tink.com/resources/income-check/fetch-your-first-income-check-report).\n\nThe documentation in this Postman collection shows how you get your Tink variables and enter them in Postman to be able to use this collection.\n\nMake sure that you have created your Tink Console account. This is where you find your API credentials, for example `client_id` and `client_secret`, and create and manage your apps. If you haven't created a Console account and an app, go to [Set up your Tink Console account](https://docs.tink.com/resources/landing/set-up-your-tink-account) and follow the instructions to set up an account and create your first app.\n\nIn Postman, go to the **Variables** tab, which should be the one with a green dot next to it. This tab contains four variables. The rest of this documentation shows how to retrieve these values.\n\nMake sure that you enter all of your variables in the **CURRENT VALUE** column.\n\nEnter the `client_id` and `client_secret` values from your Console app.\n\nTo get the `report_id` value, you must build a Tink Link URL. To do this, open Console and go to **Income Check** > **Tink Link**, and create your own Tink Link. These steps are required for providing consent to a financial institution, so that Tink can connect and retrieve account data. At the bottom of the page, select **Preview** and follow all steps on the Tink Link page that opens in a new window. At the end of a successful authorization flow, the **Income Check successful** page displays your `income_check_id`. Copy this code, go to Postman, and paste it into the variables field for `report_id`.\n\nMake sure that all of your variables are entered into the **CURRENT VALUE** column. Select **Save** (or Ctrl+S).\n\nWhen you've entered all your variables except for `access_token`, run the **POST** command to exchange your `code` for an `access_token`. The value for `access_token` is automatically entered into your list of variables.\n\nConfirm that your `access_token` has been added to your list of variables. Use your `access_token` any number of times to run the **GET** commands to fetch a report."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Create User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"external_user_id\": \"test-user-1\",\n  \"locale\": \"en_US\",\n  \"market\": \"GB\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.tink.com/api/v1/user/create",
+					"protocol": "https",
+					"host": [
+						"api",
+						"tink",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. Ingest Accounts for user as JSON",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"accounts\": [\n        {\n            \"availableCredit\": 20000.0,\n            \"balance\": 7000.0,\n            \"closed\": false,\n            \"exclusion\": \"PFM_AND_SEARCH\",\n            \"externalId\": \"test-account-1\",\n            \"flags\": [\n                \"MANDATE\"\n            ],\n            \"name\": \"Test account\",\n            \"number\": \"0\",\n            \"payload\": {},\n            \"reservedAmount\": 2000.0,\n            \"type\": \"OTHER\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.tink.com/connector/users/{{external_user_id}}/accounts",
+					"protocol": "https",
+					"host": [
+						"api",
+						"tink",
+						"com"
+					],
+					"path": [
+						"connector",
+						"users",
+						"{{external_user_id}}",
+						"accounts"
+					],
+					"query": [
+						{
+							"key": "Authorization",
+							"value": "Bearer {{access_token}}",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Welcome to Tink’s Postman collection for Income Check.\n\nFor detailed information on how to use Income Check, visit [Fetch your first Income Check report](https://docs.tink.com/resources/income-check/fetch-your-first-income-check-report).\n\nThe documentation in this Postman collection shows how you get your Tink variables and enter them in Postman to be able to use this collection.\n\nMake sure that you have created your Tink Console account. This is where you find your API credentials, for example `client_id` and `client_secret`, and create and manage your apps. If you haven't created a Console account and an app, go to [Set up your Tink Console account](https://docs.tink.com/resources/landing/set-up-your-tink-account) and follow the instructions to set up an account and create your first app.\n\nIn Postman, go to the **Variables** tab, which should be the one with a green dot next to it. This tab contains four variables. The rest of this documentation shows how to retrieve these values.\n\nMake sure that you enter all of your variables in the **CURRENT VALUE** column.\n\nEnter the `client_id` and `client_secret` values from your Console app.\n\nTo get the `report_id` value, you must build a Tink Link URL. To do this, open Console and go to **Income Check** > **Tink Link**, and create your own Tink Link. These steps are required for providing consent to a financial institution, so that Tink can connect and retrieve account data. At the bottom of the page, select **Preview** and follow all steps on the Tink Link page that opens in a new window. At the end of a successful authorization flow, the **Income Check successful** page displays your `income_check_id`. Copy this code, go to Postman, and paste it into the variables field for `report_id`.\n\nMake sure that all of your variables are entered into the **CURRENT VALUE** column. Select **Save** (or Ctrl+S).\n\nWhen you've entered all your variables except for `access_token`, run the **POST** command to exchange your `code` for an `access_token`. The value for `access_token` is automatically entered into your list of variables.\n\nConfirm that your `access_token` has been added to your list of variables. Use your `access_token` any number of times to run the **GET** commands to fetch a report."
+			},
+			"response": []
+		},
+		{
+			"name": "4. Ingest Transactions for user as JSON",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"autoBook\": false,\n    \"overridePending\": false,\n    \"transactionAccounts\": [\n        {\n            \"balance\": 7000.0,\n            \"externalId\": \"test-account-1\",\n            \"payload\": {},\n            \"reservedAmount\": 2000.0,\n            \"transactions\": [\n                {\n                    \"amount\": -98.5,\n                    \"date\": 1455740874875,\n                    \"description\": \"Dummy test transaction description\",\n                    \"externalId\": \"test-transaction-1\",\n                    \"payload\": {},\n                    \"pending\": false,\n                    \"type\": \"DEFAULT\"\n                }\n            ]\n        }\n    ],\n    \"type\": \"REAL_TIME\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.tink.com/connector/users/{{external_user_id}}/transactions",
+					"protocol": "https",
+					"host": [
+						"api",
+						"tink",
+						"com"
+					],
+					"path": [
+						"connector",
+						"users",
+						"{{external_user_id}}",
+						"transactions"
+					],
+					"query": [
+						{
+							"key": "Authorization",
+							"value": "Bearer {{access_token}}",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Welcome to Tink’s Postman collection for Income Check.\n\nFor detailed information on how to use Income Check, visit [Fetch your first Income Check report](https://docs.tink.com/resources/income-check/fetch-your-first-income-check-report).\n\nThe documentation in this Postman collection shows how you get your Tink variables and enter them in Postman to be able to use this collection.\n\nMake sure that you have created your Tink Console account. This is where you find your API credentials, for example `client_id` and `client_secret`, and create and manage your apps. If you haven't created a Console account and an app, go to [Set up your Tink Console account](https://docs.tink.com/resources/landing/set-up-your-tink-account) and follow the instructions to set up an account and create your first app.\n\nIn Postman, go to the **Variables** tab, which should be the one with a green dot next to it. This tab contains four variables. The rest of this documentation shows how to retrieve these values.\n\nMake sure that you enter all of your variables in the **CURRENT VALUE** column.\n\nEnter the `client_id` and `client_secret` values from your Console app.\n\nTo get the `report_id` value, you must build a Tink Link URL. To do this, open Console and go to **Income Check** > **Tink Link**, and create your own Tink Link. These steps are required for providing consent to a financial institution, so that Tink can connect and retrieve account data. At the bottom of the page, select **Preview** and follow all steps on the Tink Link page that opens in a new window. At the end of a successful authorization flow, the **Income Check successful** page displays your `income_check_id`. Copy this code, go to Postman, and paste it into the variables field for `report_id`.\n\nMake sure that all of your variables are entered into the **CURRENT VALUE** column. Select **Save** (or Ctrl+S).\n\nWhen you've entered all your variables except for `access_token`, run the **POST** command to exchange your `code` for an `access_token`. The value for `access_token` is automatically entered into your list of variables.\n\nConfirm that your `access_token` has been added to your list of variables. Use your `access_token` any number of times to run the **GET** commands to fetch a report."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": ""
+		}
+	]
+}
