@@ -1,0 +1,184 @@
+{
+	"info": {
+		"_postman_id": "5f7fd3db-ef42-40f7-9135-844019f36725",
+		"name": "Loans",
+		"description": "Welcome to Tink’s Postman collection for Loans.\n\nThe documentation in this Postman collection shows how you get your Tink variables and enter them in Postman to be able to use this collection.\n\nMake sure that you have created your Tink Console account. This is where you find your API credentials, for example `client_id` and `client_secret`, and create and manage your apps. If you haven't created a Console account and an app, go to [Set up your Tink Console account](https://docs.tink.com/resources/landing/set-up-your-tink-account) and follow the instructions to set up an account and create your first app.\n\nIn Postman, go to the **Variables** tab, which should be the one with a green dot next to it. This tab contains four variables. The rest of this documentation shows how to retrieve these values.\n\nMake sure that you enter all of your variables in the **CURRENT VALUE** column.\n\nEnter the `client_id` and `client_secret` values from your Console app.\n\nMake sure that all of your variables are entered into the **CURRENT VALUE** column. Select **Save** (or Ctrl+S).\n\nWhen you've entered all your variables except for `access_token`, run the **POST** command to exchange your `code` for an `access_token`. The value for `access_token` is automatically entered into your list of variables.\n\nConfirm that your `access_token` has been added to your list of variables. Use your `access_token` any number of times to run the **GET** commands to fetch a report.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19421806"
+	},
+	"item": [
+		{
+			"name": "Get Token to Retrive Loans",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"access_token\", jsonData.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJFUzI1NiIsImtpZCI6IjI4YmExYTQ2LTg2MjgtNGQ1Yy1hZDU4LTFkMjUyZTUwM2NmYyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjA2NjY0NjEsImlhdCI6MTY2MDY1OTI2MSwiaXNzIjoidGluazovL2F1dGgiLCJqdGkiOiIwYzkwZjY1MC1lZTNhLTRjNDYtOGQ5My01ZDY3OTMxNGQxY2IiLCJvcmlnaW4iOiJtYWluIiwic2NvcGVzIjpbImFjY291bnRzOnJlYWQiLCJ0cmFuc2FjdGlvbnM6cmVhZCIsImludmVzdG1lbnRzOnJlYWQiLCJpbnZlc3RtZW50LWFjY291bnRzOnJlYWRvbmx5IiwibG9hbnM6cmVhZCIsImxvYW4tYWNjb3VudHM6cmVhZG9ubHkiXSwic3ViIjoidGluazovL2F1dGgvdXNlci82ZWM3ZTA3MWY2MDk0OTMyYjg5MTlkNTU0Njk4YjBmOSIsInRpbms6Ly9hcHAvaWQiOiJjODQ4ZTgzMDc4YmQ0YmIyODdiMTI3YjJlMzAxMDIyMyIsInRpbms6Ly9hcHAvdmVyaWZpZWQiOiJmYWxzZSJ9.e5MDgP3eyedqBqjW5dP9HqLllcZEuDeb9x_dif9Jv7YG5Zgtbobc468dPWdYEuWNwgKLSjo3xQN6PG7tBuA76A",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "code",
+							"value": "{{code}}",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{client_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{client_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "authorization_code",
+							"type": "text"
+						},
+						{
+							"key": "scope",
+							"value": "accounts:read,loans:read,loan-accounts:readonly",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://api.tink.com/api/v1/oauth/token",
+					"protocol": "https",
+					"host": [
+						"api",
+						"tink",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"oauth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Loan Accounts",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://api.tink.com/data/v2/loan-accounts",
+					"protocol": "https",
+					"host": [
+						"api",
+						"tink",
+						"com"
+					],
+					"path": [
+						"data",
+						"v2",
+						"loan-accounts"
+					],
+					"query": [
+						{
+							"key": "Authorization",
+							"value": "Bearer {{access_token}}",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Loan Account By ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://api.tink.com/data/v2/loan-accounts/{{accountId}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"tink",
+						"com"
+					],
+					"path": [
+						"data",
+						"v2",
+						"loan-accounts",
+						"{{accountId}}"
+					],
+					"query": [
+						{
+							"key": "Authorization",
+							"value": "Bearer {{access_token}}",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
