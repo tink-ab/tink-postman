@@ -1,0 +1,148 @@
+{
+	"info": {
+		"_postman_id": "c6d44f0a-dcf0-4a0c-abc5-177c155e7511",
+		"name": "Expense Check",
+		"description": "Welcome to Tink’s Postman collection for Expense Check.\n\nFor detailed information on how to use Expense Check, visit [Fetch your first Expense Check report](https://docs.tink.com/resources/expense-check/fetch-your-first-expense-check-report).\n\nThe documentation in this Postman collection shows how you get your Tink variables and enter them in Postman to be able to use this collection.\n\nMake sure that you have created your Tink Console account. This is where you find your API credentials, for example `client_id` and `client_secret`, and create and manage your apps. If you haven't created a Console account and an app, go to [Set up your Tink Console account](https://docs.tink.com/resources/landing/set-up-your-tink-account) and follow the instructions to set up an account and create your first app.\n\nIn Postman, go to the **Variables** tab, which should be the one with a green dot next to it. This tab contains four variables. The rest of this documentation shows how to retrieve these values.\n\nMake sure that you enter all of your variables in the **CURRENT VALUE** column.\n\nEnter the `client_id` and `client_secret` values from your Console app.\n\nTo get the `report_id` value, you must build a Tink Link URL. To do this, open Console and go to **Expense Check** > **Tink Link**, and create your own Tink Link. These steps are required for providing consent to a financial institution, so that Tink can connect and retrieve account data. At the bottom of the page, select **Preview** and follow all steps on the Tink Link page that opens in a new window. At the end of a successful authorization flow, the **Expense Check successful** page displays your `expense_check_id`. Copy this code, go to Postman, and paste it into the variables field for `report_id`.\n\nMake sure that all of your variables are entered into the **CURRENT VALUE** column. Select **Save** (or Ctrl+S).\n\nWhen you've entered all your variables except for `access_token`, run the **POST** command to exchange your `code` for an `access_token`. The value for `access_token` is automatically entered into your list of variables.\n\nConfirm that your `access_token` has been added to your list of variables. Use your `access_token` any number of times to run the **GET** commands to fetch a report.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Get Token to Retrieve Expense Check Report",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"access_token\", jsonData.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "{{client_id}}",
+							"type": "default"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{client_secret}}",
+							"type": "default"
+						},
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "default"
+						},
+						{
+							"key": "scope",
+							"value": "expense-checks:readonly",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://api.tink.com/api/v1/oauth/token",
+					"protocol": "https",
+					"host": [
+						"api",
+						"tink",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"oauth",
+						"token"
+					]
+				},
+				"description": "Welcome to Tink’s Postman collection for Expense Check.\n\nFor detailed information on how to use Expense Check, visit [Fetch your first Expense Check report](https://docs.tink.com/resources/expense-check/fetch-your-first-expense-check-report).\n\nThe documentation in this Postman collection shows how you get your Tink variables and enter them in Postman to be able to use this collection.\n\nMake sure that you have created your Tink Console account. This is where you find your API credentials, for example `client_id` and `client_secret`, and create and manage your apps. If you haven't created a Console account and an app, go to [Set up your Tink Console account](https://docs.tink.com/resources/landing/set-up-your-tink-account) and follow the instructions to set up an account and create your first app.\n\nIn Postman, go to the **Variables** tab, which should be the one with a green dot next to it. This tab contains four variables. The rest of this documentation shows how to retrieve these values.\n\nMake sure that you enter all of your variables in the **CURRENT VALUE** column.\n\nEnter the `client_id` and `client_secret` values from your Console app.\n\nTo get the `report_id` value, you must build a Tink Link URL. To do this, open Console and go to **Expense Check** > **Tink Link**, and create your own Tink Link. These steps are required for providing consent to a financial institution, so that Tink can connect and retrieve account data. At the bottom of the page, select **Preview** and follow all steps on the Tink Link page that opens in a new window. At the end of a successful authorization flow, the **Expense Check successful** page displays your `expense_check_id`. Copy this code, go to Postman, and paste it into the variables field for `report_id`.\n\nMake sure that all of your variables are entered into the **CURRENT VALUE** column. Select **Save** (or Ctrl+S).\n\nWhen you've entered all your variables except for `access_token`, run the **POST** command to exchange your `code` for an `access_token`. The value for `access_token` is automatically entered into your list of variables.\n\nConfirm that your `access_token` has been added to your list of variables. Use your `access_token` any number of times to run the **GET** commands to fetch a report."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Get Report as JSON Object",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "https://api.tink.com/risk/v1/expense-checks/{{report_id}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"tink",
+						"com"
+					],
+					"path": [
+						"risk",
+						"v1",
+						"expense-checks",
+						"{{report_id}}"
+					],
+					"query": [
+						{
+							"key": "Authorization",
+							"value": "Bearer {{access_token}}",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Welcome to Tink’s Postman collection for Expense Check.\n\nFor detailed information on how to use Expense Check, visit [Fetch your first Expense Check report](https://docs.tink.com/resources/expense-check/fetch-your-first-expense-check-report).\n\nThe documentation in this Postman collection shows how you get your Tink variables and enter them in Postman to be able to use this collection.\n\nMake sure that you have created your Tink Console account. This is where you find your API credentials, for example `client_id` and `client_secret`, and create and manage your apps. If you haven't created a Console account and an app, go to [Set up your Tink Console account](https://docs.tink.com/resources/landing/set-up-your-tink-account) and follow the instructions to set up an account and create your first app.\n\nIn Postman, go to the **Variables** tab, which should be the one with a green dot next to it. This tab contains four variables. The rest of this documentation shows how to retrieve these values.\n\nMake sure that you enter all of your variables in the **CURRENT VALUE** column.\n\nEnter the `client_id` and `client_secret` values from your Console app.\n\nTo get the `report_id` value, you must build a Tink Link URL. To do this, open Console and go to **Expense Check** > **Tink Link**, and create your own Tink Link. These steps are required for providing consent to a financial institution, so that Tink can connect and retrieve account data. At the bottom of the page, select **Preview** and follow all steps on the Tink Link page that opens in a new window. At the end of a successful authorization flow, the **Expense Check successful** page displays your `expense_check_id`. Copy this code, go to Postman, and paste it into the variables field for `report_id`.\n\nMake sure that all of your variables are entered into the **CURRENT VALUE** column. Select **Save** (or Ctrl+S).\n\nWhen you've entered all your variables except for `access_token`, run the **POST** command to exchange your `code` for an `access_token`. The value for `access_token` is automatically entered into your list of variables.\n\nConfirm that your `access_token` has been added to your list of variables. Use your `access_token` any number of times to run the **GET** commands to fetch a report."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"Status code is 200\", function () {",
+					"  pm.response.to.have.status(200);",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "client_id",
+			"value": ""
+		},
+		{
+			"key": "client_secret",
+			"value": ""
+		},
+		{
+			"key": "report_id",
+			"value": ""
+		},
+		{
+			"key": "access_token",
+			"value": ""
+		}
+	]
+}
