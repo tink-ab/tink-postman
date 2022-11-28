@@ -316,7 +316,7 @@
 								},
 								{
 									"key": "actor_client_id",
-									"value": "{{actor_client_id}}",
+									"value": "df05e4b379934cd09963197cc855bfe9",
 									"description": "REQUIRED. ID of actor client that is allowed to use the authorization code. Actor client existence is not validated.",
 									"type": "text"
 								},
