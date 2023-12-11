@@ -1,0 +1,1218 @@
+{
+	"info": {
+		"_postman_id": "fdbbbf3f-abfc-479c-b7a9-dd74e3bdcb03",
+		"name": "Balance Check",
+		"description": "Welcome to Tink's Postman collection for Balance Check with continuous access.\n\nFor detailed information on how to use Account Check, visit [Introduction to Account Check](https://docs.tink.com/resources/account-check).\n\nThe documentation in this Postman collection shows how you get your Tink variables and enter them in Postman to be able to use this collection.\n\nMake sure that you have created your Tink Console account. This is where you find your API credentials, for example, client_id and client_secret, and create and manage your apps. If you haven't yet created a Console account and an app, go to [Set up your Tink Console account](https://docs.tink.com/resources/console/set-up-your-tink-account) and follow the instructions to set up an account and create your first sandbox app.\n\nIn Postman, go to the **Variables** tab, which should have a green dot next to it. This tab contains different variables.\n\nTo begin, enter your variables in the **CURRENT VALUE** column:\n\n1. Enter the `client_id` and `client_secret` values from your Console app.\n2. Enter the `id_hint` value to be displayed in the Tink URL. The `id_hint` value is presented to the end user in Tink Link. This is to be able to verify the identity of the actual user they are interacting with and to prevent URL spoofing attacks.\n3. Enter [locale](https://docs.tink.com/resources/transactions/transactions-sdk-reference#locales) and [market](https://docs.tink.com/resources/transactions/transactions-sdk-reference#markets). The default values are `en_US` for locale and `SE` for market. These values will later be used to create a user and to generate a Tink URL.\n4. Enter the `external_user_id` value that will be assigned to your user upon creation.\n5. To change the default redirect page value, change the `redirect_url` value.\n    \n\nMake sure that all of your variables are entered into the **CURRENT VALUE** column. Select **Save** (or **Ctrl+S**).\n\nBefore you can fetch data, you must create and authenticate the user.\n\nTo create and authenticate the user, select the **Create and authenticate user** folder and:\n\n1. Select and send the **Authorize your app** request. This generates your client `access_token`.\n2. Select and send the **Create user** request to create a new user. In the response payload you will receive a `user_id` that will be set according to your variables. We recommend that you save this value and keep it as a reference to delete created users.\n3. Select and send the **Generate the code** request. A code is generated. This code is used to generate your Tink URL.\n4. Select and send the **Grant user access** request.\n5. When the process has completed, select **Visualize** in the **Body** part of Postman. You’ll see a **Tink URL**, ready to use. Select the entire URL and copy it to your clipboard.\n6. Paste the link in your browser and complete the flow by authenticating your user.\n7. Copy `account_verification_report_id` parameter from browser url and update `report_id` variable.\n    \n\nAfter you have authenticated your user, select **Fetching the initial AC report** to get account check report:\n\n1. Select and send the **Authorize your app** request to generate the access token.\n2. Select and send the **Fetch Account Check Report** request to retrieve created account check report.\n    \n\nTo get updated balance data select **Refreshing and fetching balance data** folder and:\n\n1. Select and send the **Authorize your app** request. This generates your client `access_token`.\n2. Select and send **Create authorization** request. This create generate the code for user token.\n3. Select and send the **Get provider consents** request to retrieve provider consents for the user.\n4. Select and send the **Refresh account data** request. This will refresh account data.\n    \n\nTo update consent select **Updating the user’s consent** and:\n\n1. Select and send the **Authorize your app** request. This generates your client `access_token`.\n2. Select and send the **Update consent** request.\n    \n3. When the process has completed, select **Visualize** in the **Body** part of Postman. You’ll see a **Tink URL**, ready to use. Select the entire URL and copy it to your clipboard.\n    \n4. Paste the link in your browser and complete the flow by authenticating your user.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31504301"
+	},
+	"item": [
+		{
+			"name": "1. Create and authenticate user",
+			"item": [
+				{
+					"name": "a. Authorize your app",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"pm.collectionVariables.set(\"access_token\", jsonResponse[\"access_token\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "REQUIRED. Client ID.",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"description": "Client secret. Required when the authentication method for client is configured for client secret, forbidden otherwise.",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"description": "REQUIRED. Grant type. Values: authorization_code, refresh_token, client_credentials, urn:ietf:params:oauth:grant-type:jwt-bearer",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "user:create",
+									"description": "Scope of access. Required when grant type is client_credentials or urn:ietf:params:oauth:grant-type:jwt-bearer.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.tink.com/api/v1/oauth/token",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "b. Create user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"pm.collectionVariables.set(\"user_id\", jsonResponse[\"user_id\"]);",
+									"pm.collectionVariables.set(\"external_user_id\", jsonResponse[\"external_user_id\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"external_user_id\": \"{{external_user_id}}\",\n  \"locale\": \"{{locale}}\",\n  \"market\": \"{{market}}\"\n}"
+						},
+						"url": {
+							"raw": "https://api.tink.com/api/v1/user/create",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "c. Generate the code",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"pm.collectionVariables.set(\"access_token\", jsonResponse[\"access_token\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "REQUIRED. Client ID.",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"description": "Client secret. Required when the authentication method for client is configured for client secret, forbidden otherwise.",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"description": "REQUIRED. Grant type. Values: authorization_code, refresh_token, client_credentials, urn:ietf:params:oauth:grant-type:jwt-bearer",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "authorization:grant",
+									"description": "Scope of access. Required when grant type is client_credentials or urn:ietf:params:oauth:grant-type:jwt-bearer.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.tink.com/api/v1/oauth/token",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "d. Grant user access",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"let clientId = pm.environment.get(\"client_id\");",
+									"let tinkLinkmarket = pm.collectionVariables.get(\"market\")",
+									"let tinkLinklocale = pm.collectionVariables.get(\"locale\")",
+									"let tinkLinkTest = pm.collectionVariables.get(\"test\")",
+									"let redirectUri = pm.collectionVariables.get(\"redirect_url\");",
+									"",
+									"//Set code in variables",
+									"let code = jsonResponse[\"code\"];",
+									"pm.collectionVariables.set(\"code\", code);",
+									"",
+									"//Encode redirect URI",
+									"let redirectUriEncoded = encodeURIComponent(redirectUri);",
+									"",
+									"//Compose TinkLink URI",
+									"let tinkLink = \"https://link.tink.com/1.0/account-check/connect?client_id=YOUR_CLIENT_ID&state=OPTIONAL&redirect_uri=REDIRECT_URL&authorization_code=USER_AUTHORIZATION_CODE&market=MARKET&test=TEST\"",
+									"tinkLink = tinkLink.replace(\"YOUR_CLIENT_ID\", clientId);",
+									"tinkLink = tinkLink.replace(\"USER_AUTHORIZATION_CODE\", code);",
+									"tinkLink = tinkLink.replace(\"REDIRECT_URL\", redirectUriEncoded);",
+									"tinkLink = tinkLink.replace(\"MARKET\", tinkLinkmarket);",
+									"tinkLink = tinkLink.replace(\"LOCALE\", tinkLinklocale);",
+									"tinkLink = tinkLink.replace(\"TEST\", tinkLinkTest);",
+									"",
+									"pm.collectionVariables.set(\"tink_link\", tinkLink);",
+									"",
+									"//Set html template for Postman Visualize",
+									"let postmanVisualise = `",
+									"<html>",
+									"<head>",
+									"    <script src=\"https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js\"></script>",
+									"    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js\"></script>",
+									"</head>",
+									"<body>",
+									"    <div>",
+									"    <div>",
+									"        <pre><code style=\"width:max-content;\" id=\"tinkLink\">${tinkLink}</code></pre>",
+									"    </div>",
+									"    <button class=\"copyButton\" type=\"button\" data-clipboard-action=\"copy\" data-clipboard-target=\"#tinkLink\" style=\"background:#062A2E;color:white;border-radius:25px\">COPY TINKLINK TO YOUR CLIPBOARD</button>",
+									"    </div>",
+									"</body>",
+									"</html>",
+									"<script>",
+									"    var clipboard = new ClipboardJS('.copyButton');",
+									"",
+									"    clipboard.on('success', function(tl) {",
+									"        tl.clearSelection()",
+									"        tl.trigger.textContent = 'TINKLINK COPIED TO YOUR CLIPBOARD';",
+									"        window.setTimeout(function() {",
+									"            tl.trigger.textContent = 'COPY TINKLINK TO YOUR CLIPBOARD';",
+									"        }, 2500);",
+									"    });",
+									"",
+									"    clipboard.on('error', function(tl) {",
+									"        tl.clearSelection()",
+									"        tl.trigger.textContent = 'ISSUE WITH COPYING TINKLINK';",
+									"        window.setTimeout(function() {",
+									"            tl.trigger.textContent = 'COPY TINKLINK TO YOUR CLIPBOARD';",
+									"        }, 2500);",
+									"    });",
+									"</script>`",
+									"",
+									"//Set the html template to Postamen Visualizer",
+									"pm.visualizer.set(postmanVisualise, pm.response.json());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "user_id",
+									"value": "{{user_id}}",
+									"description": "User ID. Cannot be specified at the same time as external_user_id.",
+									"type": "text"
+								},
+								{
+									"key": "id_hint",
+									"value": "{{id_hint}}",
+									"description": "REQUIRED. Human-readable information about the end-user that the actor client is authorized access to. If using Tink Link with permanent users, this will be presented to the end-user in Tink Link, to be able to verify the identity of the actual user they are interacting with and prevent URL spoofing attacks. You can use any arbitrary string value that is recognizable to the end-user, such as the end-user's full name or e-mail.",
+									"type": "text"
+								},
+								{
+									"key": "actor_client_id",
+									"value": "df05e4b379934cd09963197cc855bfe9",
+									"description": "REQUIRED. ID of actor client that is allowed to use the authorization code. Actor client existence is not validated.",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "authorization:read,authorization:grant,credentials:refresh,credentials:read,credentials:write,providers:read,user:read",
+									"description": "REQUIRED. Scope of delegated access. The scope doesn't need to be present on the access token used when calling this endpoint.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.tink.com/api/v1/oauth/authorization-grant/delegate",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"oauth",
+								"authorization-grant",
+								"delegate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Fetching the initial AC report",
+			"item": [
+				{
+					"name": "a. Authorize your app",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"pm.collectionVariables.set(\"access_token\", jsonResponse[\"access_token\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "REQUIRED. Client ID.",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"description": "Client secret. Required when the authentication method for client is configured for client secret, forbidden otherwise.",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"description": "REQUIRED. Grant type. Values: authorization_code, refresh_token, client_credentials, urn:ietf:params:oauth:grant-type:jwt-bearer",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "account-verification-reports:read",
+									"description": "Scope of access. Required when grant type is client_credentials or urn:ietf:params:oauth:grant-type:jwt-bearer.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.tink.com/api/v1/oauth/token",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "b. Fetch Account Check Report",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"pm.collectionVariables.set(\"account_id\", jsonResponse[\"userDataByProvider\"][0][\"accounts\"][0][\"id\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.tink.com/api/v1/account-verification-reports/{{report_id}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"account-verification-reports",
+								"{{report_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Refreshing and fetching balance data",
+			"item": [
+				{
+					"name": "a. Authorize your app",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"pm.collectionVariables.set(\"access_token\", jsonResponse[\"access_token\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "REQUIRED. Client ID.",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"description": "Client secret. Required when the authentication method for client is configured for client secret, forbidden otherwise.",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"description": "REQUIRED. Grant type. Values: authorization_code, refresh_token, client_credentials, urn:ietf:params:oauth:grant-type:jwt-bearer",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "authorization:grant",
+									"description": "Scope of access. Required when grant type is client_credentials or urn:ietf:params:oauth:grant-type:jwt-bearer.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.tink.com/api/v1/oauth/token",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "b. Create authorization",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"pm.collectionVariables.set(\"code\", jsonResponse[\"code\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "user_id",
+									"value": "{{user_id}}",
+									"description": "User ID. Cannot be specified at the same time as external_user_id.",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "accounts.balances:readonly,credentials:refresh,accounts:read,provider-consents:read",
+									"description": "REQUIRED. Scope of access. The scope doesn't need to be present on the access token used when calling this endpoint",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.tink.com/api/v1/oauth/authorization-grant",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"oauth",
+								"authorization-grant"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "c. Get a user access token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"pm.collectionVariables.set(\"access_token\", jsonResponse[\"access_token\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "REQUIRED. Client ID.",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"description": "Client secret. Required when the authentication method for client is configured for client secret, forbidden otherwise.",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "authorization_code",
+									"description": "REQUIRED. Grant type. Values: authorization_code, refresh_token, client_credentials, urn:ietf:params:oauth:grant-type:jwt-bearer",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "{{code}}",
+									"description": "Authorization code that was returned from the authorization flow. Required when grant type is authorization_code.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.tink.com/api/v1/oauth/token",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "d. Get provider consents",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"pm.collectionVariables.set(\"credentials_id\", jsonResponse[\"providerConsents\"][0][\"credentialsId\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.tink.com/api/v1/provider-consents",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"provider-consents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "e. Refresh account data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"external_user_id\": \"{{external_user_id}}\",\n  \"locale\": \"{{locale}}\",\n  \"market\": \"{{market}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.tink.com/api/v1/credentials/{{credentials_id}}/refresh?accountId={{account_id}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"credentials",
+								"{{credentials_id}}",
+								"refresh"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "{{account_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "f. Fetch balance data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.tink.com/data/v2/accounts/{{account_id}}/balances",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"data",
+								"v2",
+								"accounts",
+								"{{account_id}}",
+								"balances"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Updating the user’s consent",
+			"item": [
+				{
+					"name": "a. Authorize your app",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"pm.collectionVariables.set(\"access_token\", jsonResponse[\"access_token\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "REQUIRED. Client ID.",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"description": "Client secret. Required when the authentication method for client is configured for client secret, forbidden otherwise.",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"description": "REQUIRED. Grant type. Values: authorization_code, refresh_token, client_credentials, urn:ietf:params:oauth:grant-type:jwt-bearer",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "credentials:write",
+									"description": "Scope of access. Required when grant type is client_credentials or urn:ietf:params:oauth:grant-type:jwt-bearer.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.tink.com/api/v1/oauth/token",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "b. Generate the code",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"pm.collectionVariables.set(\"access_token\", jsonResponse[\"access_token\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "REQUIRED. Client ID.",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"description": "Client secret. Required when the authentication method for client is configured for client secret, forbidden otherwise.",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"description": "REQUIRED. Grant type. Values: authorization_code, refresh_token, client_credentials, urn:ietf:params:oauth:grant-type:jwt-bearer",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "authorization:grant",
+									"description": "Scope of access. Required when grant type is client_credentials or urn:ietf:params:oauth:grant-type:jwt-bearer.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.tink.com/api/v1/oauth/token",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "d. Update consent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"let clientId = pm.environment.get(\"client_id\");",
+									"let tinkLinkmarket = pm.collectionVariables.get(\"market\")",
+									"let tinkLinklocale = pm.collectionVariables.get(\"locale\")",
+									"let tinkLinkTest = pm.collectionVariables.get(\"test\")",
+									"let redirectUri = pm.collectionVariables.get(\"redirect_url\");",
+									"let credentialsId = pm.collectionVariables.get(\"credentials_id\");",
+									"",
+									"//Set code in variables",
+									"let code = jsonResponse[\"code\"];",
+									"pm.collectionVariables.set(\"code\", code);",
+									"",
+									"//Encode redirect URI",
+									"let redirectUriEncoded = encodeURIComponent(redirectUri);",
+									"",
+									"//Compose TinkLink URI",
+									"let tinkLink = \"link.tink.com/1.0/account-check/update-consent?client_id=YOUR_CLIENT_ID&redirect_uri=REDIRECT_URL&credentials_id=CREDENTIALS_ID&authorization_code=USER_AUTHORIZATION_CODE&market=MARKET\";",
+									"tinkLink = tinkLink.replace(\"YOUR_CLIENT_ID\", clientId);",
+									"tinkLink = tinkLink.replace(\"USER_AUTHORIZATION_CODE\", code);",
+									"tinkLink = tinkLink.replace(\"REDIRECT_URL\", redirectUriEncoded);",
+									"tinkLink = tinkLink.replace(\"MARKET\", tinkLinkmarket);",
+									"tinkLink = tinkLink.replace(\"LOCALE\", tinkLinklocale);",
+									"tinkLink = tinkLink.replace(\"TEST\", tinkLinkTest);",
+									"tinkLink = tinkLink.replace(\"CREDENTIALS_ID\", credentialsId);",
+									"",
+									"pm.collectionVariables.set(\"tink_link\", tinkLink);",
+									"",
+									"//Set html template for Postman Visualize",
+									"let postmanVisualise = `",
+									"<html>",
+									"<head>",
+									"    <script src=\"https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js\"></script>",
+									"    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js\"></script>",
+									"</head>",
+									"<body>",
+									"    <div>",
+									"    <div>",
+									"        <pre><code style=\"width:max-content;\" id=\"tinkLink\">${tinkLink}</code></pre>",
+									"    </div>",
+									"    <button class=\"copyButton\" type=\"button\" data-clipboard-action=\"copy\" data-clipboard-target=\"#tinkLink\" style=\"background:#062A2E;color:white;border-radius:25px\">COPY TINKLINK TO YOUR CLIPBOARD</button>",
+									"    </div>",
+									"</body>",
+									"</html>",
+									"<script>",
+									"    var clipboard = new ClipboardJS('.copyButton');",
+									"",
+									"    clipboard.on('success', function(tl) {",
+									"        tl.clearSelection()",
+									"        tl.trigger.textContent = 'TINKLINK COPIED TO YOUR CLIPBOARD';",
+									"        window.setTimeout(function() {",
+									"            tl.trigger.textContent = 'COPY TINKLINK TO YOUR CLIPBOARD';",
+									"        }, 2500);",
+									"    });",
+									"",
+									"    clipboard.on('error', function(tl) {",
+									"        tl.clearSelection()",
+									"        tl.trigger.textContent = 'ISSUE WITH COPYING TINKLINK';",
+									"        window.setTimeout(function() {",
+									"            tl.trigger.textContent = 'COPY TINKLINK TO YOUR CLIPBOARD';",
+									"        }, 2500);",
+									"    });",
+									"</script>`",
+									"",
+									"//Set the html template to Postamen Visualizer",
+									"pm.visualizer.set(postmanVisualise, pm.response.json());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "user_id",
+									"value": "{{user_id}}",
+									"description": "User ID. Cannot be specified at the same time as external_user_id.",
+									"type": "text"
+								},
+								{
+									"key": "id_hint",
+									"value": "{{id_hint}}",
+									"description": "REQUIRED. Human-readable information about the end-user that the actor client is authorized access to. If using Tink Link with permanent users, this will be presented to the end-user in Tink Link, to be able to verify the identity of the actual user they are interacting with and prevent URL spoofing attacks. You can use any arbitrary string value that is recognizable to the end-user, such as the end-user's full name or e-mail.",
+									"type": "text"
+								},
+								{
+									"key": "actor_client_id",
+									"value": "df05e4b379934cd09963197cc855bfe9",
+									"description": "REQUIRED. ID of actor client that is allowed to use the authorization code. Actor client existence is not validated.",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "authorization:read,authorization:grant,credentials:refresh,credentials:read,credentials:write,providers:read,user:read",
+									"description": "REQUIRED. Scope of delegated access. The scope doesn't need to be present on the access token used when calling this endpoint.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.tink.com/api/v1/oauth/authorization-grant/delegate",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"oauth",
+								"authorization-grant",
+								"delegate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"Status code is 200\", function () {",
+					"  pm.response.to.have.status(200);",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "locale",
+			"value": "en_US",
+			"type": "string"
+		},
+		{
+			"key": "market",
+			"value": "SE",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": ""
+		},
+		{
+			"key": "external_user_id",
+			"value": "John Doe"
+		},
+		{
+			"key": "code",
+			"value": ""
+		},
+		{
+			"key": "tink_link",
+			"value": ""
+		},
+		{
+			"key": "id_hint",
+			"value": "test",
+			"type": "string"
+		},
+		{
+			"key": "redirect_url",
+			"value": "https://console.tink.com/callback",
+			"type": "string"
+		},
+		{
+			"key": "test",
+			"value": "true",
+			"type": "string"
+		},
+		{
+			"key": "report_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "next_accounts_page_token",
+			"value": ""
+		},
+		{
+			"key": "account_id",
+			"value": ""
+		},
+		{
+			"key": "credentials_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
