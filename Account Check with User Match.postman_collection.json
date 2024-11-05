@@ -1,0 +1,364 @@
+{
+	"info": {
+		"_postman_id": "4d2882e7-3554-4b2b-b9aa-645b3f3524b6",
+		"name": "Account Check with User Match",
+		"description": "Welcome to Tink’s Postman collection for Account Check with User Match. \n \n\nFor detailed information on how to use Account Check, visit [Fetch your first Account Check report](https://docs.tink.com/resources/account-check/verify-your-first-account). \n\nThe documentation in this Postman collection shows how you get your Tink variables and enter them in Postman to be able to use this collection. \n\nMake sure that you have created your Tink Console account. This is where you find your API credentials, for example `client_id` and `client_secret`, and create and manage your apps. If you haven't created a Console account and an app, go to [Set up your Tink Console account](https://docs.tink.com/resources/landing/set-up-your-tink-account) and follow the instructions to set up an account and create your first app. \n\nIn Postman, go to the **Variables** tab, which should be the one with a green dot next to it. This tab contains four variables. The rest of this documentation shows how to retrieve these values. \n\nMake sure that you enter all your variables in the **CURRENT VALUE** column. \n \nEnter the `client_id` and `client_secret` values from your Console app. Enter [redirect_url](https://docs.tink.com/resources/account-check/account-check-sdk-reference) and [market](https://docs.tink.com/resources/account-check/account-check-sdk-reference#markets). These values will later be used to create a session and to generate a Tink URL. \n\nBefore you can retrieve report data, you must create a session containing user information. Enter user first and last name in **Variables** tab, go to **Setting up user info** folder and execute **Authorize your app** and **Create session with user info** requests. A session id generated. This id is used to generate your Tink URL. When the process has been completed, select **Visualize** in the **Body** part of Postman. You’ll see a Tink URL, ready to use. Select the entire URL and copy it to your clipboard. Paste the link in your browser and complete the flow by authenticating your user. \n\nAt the end of a successful authorization flow, the **Account Check successful** page displays your `account_verification_report_id`. Copy this code, go to Postman, and paste it into the variables field for `report_id`. \n\nMake sure that all your variables are entered into the **CURRENT VALUE** column. Select **Save** (or Ctrl+S). \n\nWhen you've entered all your variables except for `access_token`, run the **POST** command to exchange your `code` for an `access_token`. The value for `access_token` is automatically entered into your list of variables. \n\nConfirm that your `access_token` has been added to your list of variables. Use your `access_token` any number of times to run the **GET** commands to fetch a report. \n",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Setting up user info",
+			"item": [
+				{
+					"name": "a. Authorize your app",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"pm.collectionVariables.set(\"access_token\", jsonResponse[\"access_token\"]);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "REQUIRED. Client ID.",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"description": "Client secret. Required when the authentication method for client is configured for client secret, forbidden otherwise.",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"description": "REQUIRED. Grant type. Values: authorization_code, refresh_token, client_credentials, urn:ietf:params:oauth:grant-type:jwt-bearer",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "link-session:write",
+									"description": "Scope of access. Required when grant type is client_credentials or urn:ietf:params:oauth:grant-type:jwt-bearer.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.tink.com/api/v1/oauth/token",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "b. Create session with user info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = JSON.parse(responseBody);",
+									"",
+									"let sessionId = jsonResponse[\"sessionId\"];",
+									"",
+									"let clientId = pm.environment.get(\"client_id\");",
+									"let tinkLinkmarket = pm.environment.get(\"market\")",
+									"let redirectUri = pm.environment.get(\"redirect_url\");",
+									"",
+									"//Encode redirect URI",
+									"let redirectUriEncoded = encodeURIComponent(redirectUri);",
+									"",
+									"//Compose TinkLink URI",
+									"let tinkLink = \"https://link.tink.com/1.0/account-check?client_id=YOUR_CLIENT_ID&redirect_uri=REDIRECT_URL&market=MARKET&session_id=SESSION_ID\"",
+									"",
+									"tinkLink = tinkLink.replace(\"YOUR_CLIENT_ID\", clientId);",
+									"tinkLink = tinkLink.replace(\"REDIRECT_URL\", redirectUriEncoded);",
+									"tinkLink = tinkLink.replace(\"MARKET\", tinkLinkmarket);",
+									"tinkLink = tinkLink.replace(\"SESSION_ID\", sessionId);",
+									"",
+									"pm.collectionVariables.set(\"tink_link\", tinkLink);",
+									"",
+									"",
+									"//Set html template for Postman Visualize",
+									"let postmanVisualise = `",
+									"<html>",
+									"<head>",
+									"    <script src=\"https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js\"></script>",
+									"    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js\"></script>",
+									"</head>",
+									"<body>",
+									"    <div>",
+									"    <div>",
+									"        <pre><code style=\"width:max-content;\" id=\"tinkLink\">${tinkLink}</code></pre>",
+									"    </div>",
+									"    <button class=\"copyButton\" type=\"button\" data-clipboard-action=\"copy\" data-clipboard-target=\"#tinkLink\" style=\"background:#062A2E;color:white;border-radius:25px\">COPY TINKLINK TO YOUR CLIPBOARD</button>",
+									"    </div>",
+									"</body>",
+									"</html>",
+									"<script>",
+									"    var clipboard = new ClipboardJS('.copyButton');",
+									"",
+									"    clipboard.on('success', function(tl) {",
+									"        tl.clearSelection()",
+									"        tl.trigger.textContent = 'TINKLINK COPIED TO YOUR CLIPBOARD';",
+									"        window.setTimeout(function() {",
+									"            tl.trigger.textContent = 'COPY TINKLINK TO YOUR CLIPBOARD';",
+									"        }, 2500);",
+									"    });",
+									"",
+									"    clipboard.on('error', function(tl) {",
+									"        tl.clearSelection()",
+									"        tl.trigger.textContent = 'ISSUE WITH COPYING TINKLINK';",
+									"        window.setTimeout(function() {",
+									"            tl.trigger.textContent = 'COPY TINKLINK TO YOUR CLIPBOARD';",
+									"        }, 2500);",
+									"    });",
+									"</script>`",
+									"",
+									"//Set the html template to Postamen Visualizer",
+									"pm.visualizer.set(postmanVisualise, pm.response.json());",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"firstName\": \"{{first_name}}\",\n        \"lastName\": \"{{last_name}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.tink.com/link/v1/session",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"link",
+								"v1",
+								"session"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Retrieve Account Check Report",
+			"item": [
+				{
+					"name": "1. Get Token to Retrieve Account Verification Report",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.collectionVariables.set(\"access_token\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"type": "default"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"type": "default"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "default"
+								},
+								{
+									"key": "scope",
+									"value": "account-verification-reports:read",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.tink.com/api/v1/oauth/token",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get Report as JSON Object",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "https://api.tink.com/api/v1/account-verification-reports/{{report_id}}?",
+							"protocol": "https",
+							"host": [
+								"api",
+								"tink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"account-verification-reports",
+								"{{report_id}}"
+							],
+							"query": [
+								{
+									"key": "Authorization",
+									"value": "Bearer {{access_token}}",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": ""
+		},
+		{
+			"key": "sessionId",
+			"value": ""
+		},
+		{
+			"key": "tink_link",
+			"value": ""
+		},
+		{
+			"key": "report_id",
+			"value": ""
+		},
+		{
+			"key": "first_name",
+			"value": "John"
+		},
+		{
+			"key": "last_name",
+			"value": "Doe"
+		}
+	]
+}
