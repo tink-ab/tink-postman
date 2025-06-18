@@ -581,7 +581,7 @@
 								},
 								{
 									"key": "scope",
-									"value": "accounts.balances:readonly,credentials:refresh,accounts:read,provider-consents:read",
+									"value": "accounts.balances:readonly,balance-refresh,accounts:read,provider-consents:read,balance-refresh:readonly",
 									"description": "REQUIRED. Scope of access. The scope doesn't need to be present on the access token used when calling this endpoint",
 									"type": "text"
 								}
@@ -674,7 +674,7 @@
 					"response": []
 				},
 				{
-					"name": "d. Get provider consents",
+					"name": "d. Refresh balance data",
 					"event": [
 						{
 							"listen": "test",
@@ -682,7 +682,7 @@
 								"exec": [
 									"let jsonResponse = JSON.parse(responseBody);",
 									"",
-									"pm.collectionVariables.set(\"credentials_id\", jsonResponse[\"providerConsents\"][0][\"credentialsId\"]);"
+									"pm.collectionVariables.set(\"balanceRefreshId\", jsonResponse[\"balanceRefreshId\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -699,16 +699,30 @@
 								}
 							]
 						},
-						"method": "GET",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accountId\": \"{{account_id}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "https://api.tink.com/api/v1/provider-consents",
+							"raw": "https://api.tink.com/api/v1/balance-refresh",
 							"protocol": "https",
 							"host": [
 								"api",
@@ -718,14 +732,14 @@
 							"path": [
 								"api",
 								"v1",
-								"provider-consents"
+								"balance-refresh"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "e. Refresh account data",
+					"name": "e. Fetch balance refresh status",
 					"event": [
 						{
 							"listen": "test",
@@ -748,19 +762,10 @@
 								}
 							]
 						},
-						"method": "POST",
+						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"external_user_id\": \"{{external_user_id}}\",\n  \"locale\": \"{{locale}}\",\n  \"market\": \"{{market}}\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "https://api.tink.com/api/v1/credentials/{{credentials_id}}/refresh?accountId={{account_id}}",
+							"raw": "https://api.tink.com/api/v1/balance-refresh/{{balanceRefreshId}}",
 							"protocol": "https",
 							"host": [
 								"api",
@@ -770,15 +775,8 @@
 							"path": [
 								"api",
 								"v1",
-								"credentials",
-								"{{credentials_id}}",
-								"refresh"
-							],
-							"query": [
-								{
-									"key": "accountId",
-									"value": "{{account_id}}"
-								}
+								"balance-refresh",
+								"{{balanceRefreshId}}"
 							]
 						}
 					},
